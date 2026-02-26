@@ -1,0 +1,746 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>7 Meses Juntos💛</title>
+
+  <style>
+    :root{
+      --bg1:#0f1020;
+      --bg2:#1a1533;
+      --card:#ffffff0f;
+      --text:#f7f5ff;
+      --muted:#d9d5ffcc;
+      --accent:#ffcc66;
+      --accent2:#ff7aa2;
+      --shadow: 0 20px 60px rgba(0,0,0,.45);
+      --radius: 22px;
+    }
+
+    *{ box-sizing:border-box; }
+    html, body { height: 100%; }
+
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(1200px 700px at 20% 10%, #3a2a7a55, transparent 60%),
+        radial-gradient(900px 500px at 80% 20%, #ff7aa244, transparent 55%),
+        linear-gradient(160deg, var(--bg1), var(--bg2));
+      min-height:100vh;
+      overflow-x:hidden;
+    }
+
+    /* Cuando el sobre está visible, bloquea scroll del body */
+    body.lock{ overflow:hidden; }
+
+    /* ====== PANTALLAS ====== */
+    .screen{
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:18px;
+    }
+    .hidden{ display:none !important; }
+
+    /* SOLO el SOBRE es fijo */
+    #screenEnvelope{
+      position:fixed;
+      inset:0;
+    }
+
+    /* La carta queda en flujo normal, scrollea con el body */
+    #screenLetter{
+      position:relative;
+      align-items:flex-start;
+      justify-content:flex-start;
+      padding:18px;
+    }
+
+    /* ====== SOBRE ====== */
+    .envelopeWrap{
+      width:min(520px, 92vw);
+      text-align:center;
+    }
+    .hint{
+      margin-top:18px;
+      color:var(--muted);
+      font-size:14px;
+      line-height:1.45;
+    }
+    .envelope{
+      width:min(420px, 90vw);
+      height:260px;
+      margin:0 auto;
+      position:relative;
+      cursor:pointer;
+      filter: drop-shadow(0 20px 35px rgba(0,0,0,.45));
+      user-select:none;
+      -webkit-tap-highlight-color:transparent;
+      outline:none;
+    }
+
+    .env-body{
+      position:absolute; inset:0;
+      background: linear-gradient(135deg, #ffffff18, #ffffff08);
+      border:1px solid #ffffff22;
+      border-radius:26px;
+      overflow:hidden;
+    }
+
+    .env-left, .env-right, .env-bottom{
+      position:absolute;
+      width:0; height:0;
+      border-style:solid;
+      opacity:.95;
+    }
+    .env-left{
+      left:0; top:0;
+      border-width:130px 0 130px 210px;
+      border-color:transparent transparent transparent #ffffff12;
+    }
+    .env-right{
+      right:0; top:0;
+      border-width:130px 210px 130px 0;
+      border-color:transparent #ffffff10 transparent transparent;
+    }
+    .env-bottom{
+      left:0; bottom:0;
+      border-width:0 210px 140px 210px;
+      border-color:transparent transparent #00000022 transparent;
+    }
+
+    .env-flap{
+      position:absolute;
+      left:0; right:0;
+      top:0;
+      height:140px;
+      transform-origin: top center;
+      transform: rotateX(0deg);
+      transition: transform 900ms cubic-bezier(.2,.9,.2,1);
+      z-index:4;
+      border-top-left-radius:26px;
+      border-top-right-radius:26px;
+      overflow:hidden;
+    }
+    .env-flap::before{
+      content:"";
+      position:absolute; inset:0;
+      background: linear-gradient(135deg, #ffcc6633, #ff7aa233);
+      border-bottom:1px solid #ffffff22;
+      clip-path: polygon(0 0, 100% 0, 50% 100%);
+    }
+
+    .seal{
+      position:absolute;
+      left:50%; top:100px;
+      transform:translateX(-50%);
+      width:56px; height:56px;
+      border-radius:999px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      display:grid; place-items:center;
+      color:#0b0b14;
+      font-weight:900;
+      z-index:5;
+      box-shadow: 0 12px 26px rgba(0,0,0,.35);
+    }
+
+    .letter{
+      position:absolute;
+      left:18px; right:18px;
+      bottom:18px;
+      height:210px;
+      border-radius:18px;
+      background: linear-gradient(135deg, #ffffff1a, #ffffff0a);
+      border:1px solid #ffffff22;
+      transform: translateY(55px);
+      transition: transform 900ms cubic-bezier(.2,.9,.2,1);
+      z-index:3;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      padding:14px 16px;
+      text-align:center;
+    }
+    .letter .big{
+      font-size:20px;
+      font-weight:900;
+      letter-spacing:.2px;
+    }
+    .letter .small{
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.35;
+      max-width:34ch;
+    }
+
+    .envelope.open .env-flap{ transform: rotateX(160deg); }
+    .envelope.open .letter{ transform: translateY(-30px); }
+
+    .fadeOut{ animation: fadeOut 450ms ease forwards; }
+    @keyframes fadeOut{ to{ opacity:0; transform: scale(.98); } }
+
+    /* ====== CONTENIDO DE LA CARTA ====== */
+    .wrap{
+      width:min(980px, 92vw);
+      margin:0 auto;
+      padding:24px 0 56px;
+    }
+    header{
+      position:relative;
+      border-radius: var(--radius);
+      background: linear-gradient(135deg, #ffffff12, #ffffff05);
+      box-shadow: var(--shadow);
+      padding:28px 22px;
+      overflow:hidden;
+    }
+    header::before{
+      content:"";
+      position:absolute; inset:-2px;
+      background:
+        radial-gradient(650px 280px at 30% 20%, #ffcc6650, transparent 55%),
+        radial-gradient(600px 260px at 80% 60%, #ff7aa250, transparent 55%);
+      filter: blur(6px);
+      z-index:0;
+    }
+    header > *{ position:relative; z-index:1; }
+
+    .tag{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 12px;
+      border-radius:999px;
+      background:#ffffff10;
+      border:1px solid #ffffff18;
+      color:var(--muted);
+      font-size:13px;
+      letter-spacing:.3px;
+      flex-wrap:wrap;
+    }
+    h1{
+      margin:12px 0 6px;
+      font-size: clamp(28px, 4vw, 44px);
+      line-height:1.05;
+    }
+    .sub{
+      margin:0;
+      color:var(--muted);
+      font-size: clamp(14px, 2.2vw, 16px);
+      max-width:64ch;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap:16px;
+      margin-top:18px;
+    }
+    .card{
+      grid-column: span 12;
+      background: var(--card);
+      border:1px solid #ffffff18;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding:18px;
+      backdrop-filter: blur(10px);
+    }
+    @media (min-width: 820px){
+      .card.half{ grid-column: span 6; }
+    }
+
+    /* ✅ Layout mejorado: Galería grande (8) + columna derecha (4) */
+    @media (min-width: 820px){
+      .card.galleryCard{ grid-column: span 8; }
+      .card.rightCard{ grid-column: span 4; }
+    }
+    @media (max-width: 819px){
+      .card.galleryCard,
+      .card.rightCard{ grid-column: span 12; }
+    }
+
+    .title{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom:10px;
+    }
+    .title h2{ margin:0; font-size:18px; }
+
+    .pill{
+      font-size:12px;
+      color:#0b0b14;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      padding:7px 10px;
+      border-radius:999px;
+      font-weight:700;
+      white-space:nowrap;
+    }
+
+    .counter{ display:flex; gap:12px; flex-wrap:wrap; margin-top:12px; }
+    .unit{
+      flex:1;
+      min-width:120px;
+      padding:14px 12px;
+      border-radius:18px;
+      background:#00000022;
+      border:1px solid #ffffff12;
+    }
+    .num{ font-size:26px; font-weight:800; letter-spacing:.5px; }
+    .lab{ color:var(--muted); font-size:12px; margin-top:3px; }
+
+    .notes{
+      display:grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap:12px;
+    }
+    details{
+      border-radius:18px;
+      background:#00000022;
+      border:1px solid #ffffff12;
+      padding:12px 14px;
+    }
+    summary{
+      cursor:pointer;
+      list-style:none;
+      font-weight:700;
+    }
+    summary::-webkit-details-marker{ display:none; }
+    details p{ color:var(--muted); margin:10px 0 2px; line-height:1.4; }
+
+    /* ✅ GALERÍA: 2 por fila, cuadradas */
+    .gallery{
+      display:grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap:12px;
+      margin-top:10px;
+    }
+    .gallery img{
+      width:100%;
+      aspect-ratio: 1 / 1;
+      object-fit: cover;
+      border-radius:18px;
+      border:1px solid #ffffff18;
+      display:block;
+    }
+
+    .btns{ display:flex; gap:10px; flex-wrap:wrap; margin-top:10px; }
+
+    button{
+      appearance:none;
+      border:none;
+      cursor:pointer;
+      border-radius:999px;
+      padding:12px 14px;
+      font-weight:800;
+      letter-spacing:.2px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color:#0b0b14;
+      text-decoration:none;
+      display:inline-flex; align-items:center; gap:8px;
+    }
+    button.secondary{
+      background:#ffffff10;
+      border:1px solid #ffffff20;
+      color:var(--text);
+      font-weight:700;
+    }
+
+    .footer{
+      margin-top:16px;
+      color:var(--muted);
+      font-size:12px;
+      text-align:center;
+    }
+
+    .overlay{
+      position:fixed; inset:0;
+      background: rgba(0,0,0,.55);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:18px;
+      z-index:50;
+    }
+    .modal{
+      width:min(560px, 96vw);
+      background:#120f25;
+      border:1px solid #ffffff20;
+      border-radius:24px;
+      box-shadow: var(--shadow);
+      padding:18px;
+    }
+    .modal h3{ margin:0 0 6px; }
+    .modal p{ margin:0; color:var(--muted); line-height:1.45; }
+    .modal .btns{ justify-content:flex-end; }
+
+    /* corazones flotando */
+    .heart{
+      position:fixed;
+      bottom:-20px;
+      font-size:18px;
+      animation: floatUp linear forwards;
+      opacity:.9;
+      z-index:0;
+      filter: drop-shadow(0 10px 12px rgba(0,0,0,.35));
+      pointer-events:none;
+    }
+    @keyframes floatUp{
+      to{
+        transform: translateY(-110vh) translateX(var(--drift));
+        opacity:0;
+      }
+    }
+
+    /* controles mini de música */
+    .musicMini{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      margin-top:12px;
+      color:var(--muted);
+      font-size:13px;
+      flex-wrap:wrap;
+    }
+    input[type="range"]{
+      width:160px;
+      accent-color: var(--accent);
+    }
+
+    /* ✅ Columna derecha: apila módulos */
+    .rightStack{
+      display:flex;
+      flex-direction:column;
+      gap:16px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ====== PANTALLA 1 SOBRE ====== -->
+  <section class="screen" id="screenEnvelope" aria-label="Sobre de entrada">
+    <div class="envelopeWrap">
+      <div class="envelope" id="envelope" role="button" tabindex="0" aria-label="Abrir sobre">
+        <div class="env-body">
+          <div class="env-left"></div>
+          <div class="env-right"></div>
+          <div class="env-bottom"></div>
+        </div>
+        <div class="env-flap"></div>
+        <div class="seal">💌</div>
+        <div class="letter">
+          <div class="big">Para ti, Mi Amor 💛</div>
+          <div class="small">Toca el sobre para abrir el sobre.</div>
+        </div>
+      </div>
+
+      <div class="hint">
+        Tip: Sube un poquito el volumen 🔊<br>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== PANTALLA 2 CARTA ====== -->
+  <section class="screen hidden" id="screenLetter" aria-label="Carta">
+    <div class="wrap">
+      <header>
+        <div class="tag">💌 Para <strong id="toName">Jhonatan, Mi Coranzocito de Melocotón</strong> · <span>7 meses</span></div>
+        <h1>Gracias por estos 7 meses, mi vida 💛</h1>
+        <p class="sub" id="headline">Te convertiste en el verdadero significado de la palabra amor, llenándome la vida no solo de felicidad y apoyo, sino también de ti y tu vida; Ahora somos una construcción de amor.</p>
+
+        <div class="musicMini">
+          <span>🎶 Música</span>
+          <button class="secondary" id="toggleMusic">Pausar</button>
+          <span>Volumen</span>
+          <input id="vol" type="range" min="0" max="1" step="0.01" value="0.55" />
+        </div>
+      </header>
+
+      <section class="grid">
+        <div class="card half">
+          <div class="title">
+            <h2>⏳ Nuestro contador</h2>
+            <span class="pill" id="sinceLabel">Desde que nuestros corazones decidieron estar juntos</span>
+          </div>
+          <p style="margin:0;color:var(--muted)">
+            Tiempo desde que la vida nos permitio convertirnos en un solo amor.
+          </p>
+
+          <div class="counter" id="counter"></div>
+
+          <div class="btns">
+            <button class="secondary" id="toggleHearts">✨ Menos corazoncitos</button>
+            <button id="secretBtn">🔒 Mensaje secreto</button>
+          </div>
+        </div>
+
+        <div class="card half">
+          <div class="title">
+            <h2>📝 Mini cartitas</h2>
+            <span class="pill">Ábrelas</span>
+          </div>
+
+          <div class="notes">
+            <details>
+              <summary>Recordarte...</summary>
+              <p>Ver la Luna es recordar cada noche que la vi a tu lado y me la regalaste.</p>
+            </details>
+            <details>
+              <summary>Admirarte...</summary>
+              <p>Escuharte hablar de lo que sabes, amas y te inspira, me llena el corazón de orgullo.</p>
+            </details>
+            <details>
+              <summary>Mi promesa para nosotros</summary>
+              <p>Construir y fortalecer bases solidad de amor, llenas de honestidad y confianza.</p>
+            </details>
+            <details>
+              <summary>Plan para nuestro primer año</summary>
+              <p>Tener como proposito conocernos, amarnos más y realizar muchos planes juntos.</p>
+            </details>
+          </div>
+        </div>
+
+        <!-- ✅ Galería grande -->
+        <div class="card galleryCard">
+          <div class="title">
+            <h2>📸 Galería de Nosotros</h2>
+            <span class="pill">Fotos</span>
+          </div>
+          <div class="gallery">
+            <img src="imagenes/foto1.jpeg" alt="Foto 1">
+            <img src="imagenes/foto2.jpeg" alt="Foto 2">
+            <img src="imagenes/foto3.jpeg" alt="Foto 3">
+            <img src="imagenes/foto4.jpeg" alt="Foto 4">
+          </div>
+        </div>
+
+        <!-- ✅ Columna derecha unificada (frase + lista) -->
+        <div class="card rightCard">
+          <div class="rightStack">
+
+            <div>
+              <div class="title">
+                <h2>💬 Una frase para ti</h2>
+                <span class="pill">Random</span>
+              </div>
+              <p style="margin:0;color:var(--muted)">
+                Cada vez que la presiones, sale algo lindo ✨
+              </p>
+              <div class="btns">
+                <button class="secondary" id="randomCompliment">Dime algo lindo</button>
+              </div>
+              <p id="compliment" style="margin:10px 0 0;color:var(--muted)"></p>
+            </div>
+
+            <div>
+              <div class="title">
+                <h2>🗓️ 7 cosas que amo</h2>
+                <span class="pill">Lista</span>
+              </div>
+              <ol style="margin:8px 0 0; color:var(--muted); line-height:1.6; padding-left:18px">
+                <li>Tu sonrisa.</li>
+                <li>Tus abrazos que estripan.</li>
+                <li>La forma en que me miras.</li>
+                <li>Como me cuidas siempre</li>
+                <li>Tus ojitos que parecen dos ventanas con un paisaje hermoso.</li>
+                <li>Que apesar de todo luchamos por lo que amamamos</li>
+                <li> Absolutamente TODO de ti 💛</li>
+              </ol>
+            </div>
+
+          </div>
+        </div>
+
+      </section>
+
+      <div class="footer">
+        Hecho con amor 💛 (y con un poquito de magia en HTML)
+      </div>
+    </div>
+  </section>
+
+  <!-- Modal secreto -->
+  <div class="overlay" id="overlay" role="dialog" aria-modal="true">
+    <div class="modal">
+      <h3>🔐 Mensaje secreto</h3>
+      <p id="secretText">EDITA AQUÍ “Gracias por elegirme cada día. Feliz 7 meses.” 💛</p>
+      <div class="btns">
+        <button class="secondary" id="closeModal">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Música (pon el mp3 en la misma carpeta que este html) -->
+  <audio id="bgMusic" loop preload="auto">
+    <source src="cancion.mp3" type="audio/mpeg" />
+  </audio>
+
+  <script>
+    /* ====== EDITA AQUÍ ====== */
+    const START_DATE     = "2025-07-26T00:00:00"; // fecha inicio real
+    const SINCE_LABEL    = "26 Jul 2025";         // texto bonito
+    const HEARTS_DEFAULT = true;
+
+    /* ====== Elementos ====== */
+    const screenEnvelope = document.getElementById("screenEnvelope");
+    const screenLetter   = document.getElementById("screenLetter");
+    const envelope       = document.getElementById("envelope");
+
+    const music       = document.getElementById("bgMusic");
+    const vol         = document.getElementById("vol");
+    const toggleMusic = document.getElementById("toggleMusic");
+
+    /* Al inicio: bloquea scroll mientras está el sobre */
+    document.body.classList.add("lock");
+
+    let opened = false;
+
+    function openEnvelope(){
+      if(opened) return;
+      opened = true;
+
+      envelope.classList.add("open");
+
+      /* música por interacción del usuario */
+      music.volume = Number(vol.value || 0.55);
+      music.play().catch(() => {});
+
+      /* transición a la carta */
+      setTimeout(() => {
+        screenEnvelope.classList.add("fadeOut");
+        setTimeout(() => {
+          screenEnvelope.classList.add("hidden");
+          screenLetter.classList.remove("hidden");
+
+          /* habilita scroll normal */
+          document.body.classList.remove("lock");
+          window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+
+          burstHearts(12);
+        }, 420);
+      }, 900);
+    }
+
+    envelope.addEventListener("click", openEnvelope);
+    envelope.addEventListener("keydown", (e) => {
+      if(e.key === "Enter" || e.key === " "){
+        e.preventDefault();
+        openEnvelope();
+      }
+    });
+
+    vol.addEventListener("input", () => {
+      music.volume = Number(vol.value);
+    });
+
+    toggleMusic.addEventListener("click", () => {
+      if(music.paused){
+        music.play().catch(() => {});
+        toggleMusic.textContent = "Pausar";
+      } else {
+        music.pause();
+        toggleMusic.textContent = "Reproducir";
+      }
+    });
+
+    /* ====== contador ====== */
+    const counterEl  = document.getElementById("counter");
+    const sinceLabel = document.getElementById("sinceLabel");
+    sinceLabel.textContent = "Desde " + SINCE_LABEL;
+
+    function pad(n){ return String(n).padStart(2, "0"); }
+
+    function renderCounter(){
+      const start = new Date(START_DATE);
+      const now   = new Date();
+      const diff  = Math.max(0, now - start);
+
+      const totalSec = Math.floor(diff / 1000);
+      const days  = Math.floor(totalSec / (3600 * 24));
+      const hours = Math.floor((totalSec % (3600 * 24)) / 3600);
+      const mins  = Math.floor((totalSec % 3600) / 60);
+      const secs  = totalSec % 60;
+
+      counterEl.innerHTML = `
+        <div class="unit"><div class="num">${days}</div><div class="lab">días</div></div>
+        <div class="unit"><div class="num">${pad(hours)}</div><div class="lab">horas</div></div>
+        <div class="unit"><div class="num">${pad(mins)}</div><div class="lab">minutos</div></div>
+        <div class="unit"><div class="num">${pad(secs)}</div><div class="lab">segundos</div></div>
+      `;
+    }
+
+    renderCounter();
+    setInterval(renderCounter, 1000);
+
+    /* ====== modal ====== */
+    const overlay = document.getElementById("overlay");
+    document.getElementById("secretBtn").addEventListener("click", () => overlay.style.display = "flex");
+    document.getElementById("closeModal").addEventListener("click", () => overlay.style.display = "none");
+    overlay.addEventListener("click", (e) => { if(e.target === overlay) overlay.style.display = "none"; });
+
+    /* ====== cumplidos random ====== */
+    const compliments = [
+      "Tu forma de existir me hace sentir segura.",
+      "Me encanta cómo haces que lo simple se sienta especial.",
+      "Gracias por cuidarme incluso en los días malos.",
+      "Eres mi lugar favorito para volver.",
+      "Contigo, todo se ve más bonito.",
+      "Soy muy feliz a tu lado."
+    ];
+
+    document.getElementById("randomCompliment").addEventListener("click", () => {
+      const pick = compliments[Math.floor(Math.random() * compliments.length)];
+      document.getElementById("compliment").textContent = "💛 " + pick;
+      burstHearts(10);
+    });
+
+    /* ====== corazones ====== */
+    let heartsOn = HEARTS_DEFAULT;
+    const btnHearts = document.getElementById("toggleHearts");
+    btnHearts.textContent = heartsOn ? "✨ Menos corazoncitos" : "✨ Más corazoncitos";
+
+    btnHearts.addEventListener("click", () => {
+      heartsOn = !heartsOn;
+      btnHearts.textContent = heartsOn ? "✨ Menos corazoncitos" : "✨ Más corazoncitos";
+      if(heartsOn) burstHearts(12);
+    });
+
+    function makeHeart(){
+      const h = document.createElement("div");
+      h.className = "heart";
+      h.textContent = Math.random() > 0.5 ? "💛" : "💖";
+
+      const left  = Math.random() * 100;
+      const dur   = 4 + Math.random() * 4;
+      const drift = (Math.random() * 120 - 60) + "px";
+
+      h.style.left = left + "vw";
+      h.style.animationDuration = dur + "s";
+      h.style.setProperty("--drift", drift);
+      h.style.fontSize = (14 + Math.random() * 18) + "px";
+
+      document.body.appendChild(h);
+      setTimeout(() => h.remove(), dur * 1000);
+    }
+
+    function burstHearts(n){
+      if(!heartsOn) return;
+      for(let i = 0; i < n; i++){
+        setTimeout(makeHeart, i * 120);
+      }
+    }
+
+    setInterval(() => {
+      if(heartsOn && !screenLetter.classList.contains("hidden")) makeHeart();
+    }, 650);
+  </script>
+
+</body>
+</html>
